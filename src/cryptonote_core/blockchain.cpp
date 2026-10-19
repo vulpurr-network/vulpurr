@@ -854,6 +854,15 @@ bool Blockchain::get_block_by_hash(const crypto::hash &h, block &blk, bool *orph
 // last DIFFICULTY_BLOCKS_COUNT blocks and passes them to next_difficulty,
 // returning the result of that call.  Ignores the genesis block, and can use
 // less blocks than desired if there aren't enough.
+// Vulpurr: pick the difficulty algorithm by height (LWMA after activation)
+static difficulty_type vulpurr_next_difficulty(network_type nettype, uint64_t height, std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulative_difficulties, size_t target)
+{
+  const uint64_t lwma_height = nettype == MAINNET ? VULPURR_LWMA_HEIGHT_MAINNET : 1;
+  if (height >= lwma_height)
+    return next_difficulty_lwma(std::move(timestamps), std::move(cumulative_difficulties), target);
+  return next_difficulty(std::move(timestamps), std::move(cumulative_difficulties), target);
+}
+//------------------------------------------------------------------
 difficulty_type Blockchain::get_difficulty_for_next_block()
 {
   if (m_fixed_difficulty)
@@ -926,7 +935,7 @@ difficulty_type Blockchain::get_difficulty_for_next_block()
     m_difficulties = difficulties;
   }
   size_t target = get_difficulty_target();
-  difficulty_type diff = next_difficulty(timestamps, difficulties, target);
+  difficulty_type diff = vulpurr_next_difficulty(m_nettype, height, timestamps, difficulties, target);
 
   CRITICAL_REGION_LOCAL1(m_difficulty_lock);
   m_difficulty_for_next_block_top_hash = top_hash;
@@ -982,7 +991,7 @@ size_t Blockchain::recalculate_difficulties(boost::optional<uint64_t> start_heig
   for (uint64_t height = start_height; height <= top_height; ++height)
   {
     size_t target = get_ideal_hard_fork_version(height) < 2 ? DIFFICULTY_TARGET_V1 : DIFFICULTY_TARGET_V2;
-    difficulty_type recalculated_diff = next_difficulty(timestamps, difficulties, target);
+    difficulty_type recalculated_diff = vulpurr_next_difficulty(m_nettype, height, timestamps, difficulties, target);
 
     boost::multiprecision::uint256_t recalculated_cum_diff_256 = boost::multiprecision::uint256_t(recalculated_diff) + last_cum_diff;
     CHECK_AND_ASSERT_THROW_MES(recalculated_cum_diff_256 <= std::numeric_limits<difficulty_type>::max(), "Difficulty overflow!");
@@ -1287,7 +1296,7 @@ difficulty_type Blockchain::get_next_difficulty_for_alternative_chain(const std:
   size_t target = get_ideal_hard_fork_version(bei.height) < 2 ? DIFFICULTY_TARGET_V1 : DIFFICULTY_TARGET_V2;
 
   // calculate the difficulty target for the block and return it
-  return next_difficulty(timestamps, cumulative_difficulties, target);
+  return vulpurr_next_difficulty(m_nettype, bei.height, timestamps, cumulative_difficulties, target);
 }
 //------------------------------------------------------------------
 // This function does a sanity check on basic things that all miner
@@ -3971,7 +3980,14 @@ bool Blockchain::check_block_timestamp(std::vector<uint64_t>& timestamps, const 
 
   LOG_PRINT_L3("Blockchain::" << __func__);
 
-  if(b.timestamp > (uint64_t)time(NULL) + CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT)
+  // Vulpurr: shorter future-time limit after LWMA activation. Read the height without
+  // get_block_height(): templates reach here before the miner tx exists, and its error
+  // path would cache a wrong block hash in the template.
+  uint64_t ftl_height = 0;
+  if (b.miner_tx.vin.size() == 1 && b.miner_tx.vin[0].type() == typeid(txin_gen))
+    ftl_height = boost::get<txin_gen>(b.miner_tx.vin[0]).height;
+  const uint64_t future_time_limit = ftl_height >= VULPURR_LWMA_HEIGHT_MAINNET ? VULPURR_FUTURE_TIME_LIMIT_LWMA : CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT;
+  if(b.timestamp > (uint64_t)time(NULL) + future_time_limit)
   {
     MERROR_VER("Timestamp of block with id: " << get_block_hash(b) << ", "
       << b.timestamp << ", bigger than local time + 2 hours");
@@ -4737,6 +4753,8 @@ void Blockchain::check_against_checkpoints(const checkpoints& points, bool enfor
         LOG_ERROR("Local blockchain failed to pass a checkpoint, rolling back!");
         std::list<block> empty;
         rollback_blockchain_switching(empty, pt.first - 2);
+        // Vulpurr: the chain is shorter now; later checkpoints refer to blocks we no longer have
+        break;
       }
       else
       {
@@ -4758,27 +4776,11 @@ bool Blockchain::update_checkpoints(const std::string& file_path, bool check_dns
       return false;
   }
 
-  // if we're checking both dns and json, load checkpoints from dns.
-  // if we're not hard-enforcing dns checkpoints, handle accordingly
-  if (m_enforce_dns_checkpoints && check_dns && !m_offline)
+  // Vulpurr: signed checkpoints from vulpurr.com replace MoneroPulse DNS checkpoints
+  if (check_dns && !m_offline)
   {
-    if (!m_checkpoints.load_checkpoints_from_dns())
-    {
-      return false;
-    }
-  }
-  else if (check_dns && !m_offline)
-  {
-    checkpoints dns_points;
-    dns_points.load_checkpoints_from_dns();
-    if (m_checkpoints.check_for_conflicts(dns_points))
-    {
-      check_against_checkpoints(dns_points, false);
-    }
-    else
-    {
-      MERROR("One or more checkpoints fetched from DNS conflicted with existing checkpoints!");
-    }
+    if (!m_checkpoints.load_checkpoints_from_vulpurr())
+      MERROR("Vulpurr checkpoints conflict with existing checkpoints, ignoring them");
   }
 
   check_against_checkpoints(m_checkpoints, true);
@@ -5623,7 +5625,7 @@ void Blockchain::cancel()
 static const char expected_block_hashes_hash[] = "4871b67b077087affd07094be0f70bfd0d4e4105df126646e0a7524fe02b1d5d";
 void Blockchain::load_compiled_in_block_hashes(const GetCheckpointsCallback& get_checkpoints)
 {
-  if (get_checkpoints == nullptr || !m_fast_sync)
+  if (true) // Vulpurr: never load compiled-in Monero block hashes
   {
     return;
   }

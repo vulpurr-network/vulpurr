@@ -30,6 +30,8 @@
 
 #pragma once
 
+#include "vulpurr_activation.h"
+
 #include <cstdint>
 #include <stdexcept>
 #include <string>
@@ -46,6 +48,15 @@
 #define CURRENT_BLOCK_MAJOR_VERSION                     1
 #define CURRENT_BLOCK_MINOR_VERSION                     0
 #define CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT              60*60*2
+
+// Vulpurr: small-network protection
+#define VULPURR_MAX_REORG_DEPTH                         10     // never rewrite more than this many blocks
+#define VULPURR_LWMA_WINDOW                             72     // LWMA-1 window (zawy12), N = 45*(600/T)^0.3 for T=120
+#define VULPURR_LWMA_START_DIFFICULTY                   100000 // used when fewer than 6 blocks exist
+#define VULPURR_LWMA_HEIGHT_MAINNET                     VULPURR_LWMA_ACTIVATION
+#define VULPURR_FUTURE_TIME_LIMIT_LWMA                  (DIFFICULTY_TARGET_V2 * 5)
+#define VULPURR_CHECKPOINTS_PUBKEY                      "c0e42a4cb7a184cde51aae6579daecea6f102c6bf3d573565ca2601f4b410555"
+#define VULPURR_CHECKPOINTS_INTERVAL                    300    // seconds between checkpoint fetches
 #define CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE             10
 
 #define BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW               60
@@ -162,7 +173,7 @@
 
 #define RPC_IP_FAILS_BEFORE_BLOCK                       3
 
-#define CRYPTONOTE_NAME                         "bitmonero"
+#define CRYPTONOTE_NAME                         "vulpurr"
 #define CRYPTONOTE_BLOCKCHAINDATA_FILENAME      "data.mdb"
 #define CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME "lock.mdb"
 #define P2P_NET_DATA_FILENAME                   "p2pstate.bin"
@@ -224,17 +235,16 @@ namespace config
   uint64_t const DEFAULT_DUST_THRESHOLD = ((uint64_t)2000000000); // 2 * pow(10, 9)
   uint64_t const BASE_REWARD_CLAMP_THRESHOLD = ((uint64_t)100000000); // pow(10, 8)
 
-  uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 18;
-  uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 19;
-  uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 42;
-  uint16_t const P2P_DEFAULT_PORT = 18080;
-  uint16_t const RPC_DEFAULT_PORT = 18081;
-  uint16_t const ZMQ_RPC_DEFAULT_PORT = 18082;
+  uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0x63ac; // "Vu..."
+  uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x512b; // "Vi..."
+  uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x48ac; // "Vs..."
+  uint16_t const P2P_DEFAULT_PORT = 27080;
+  uint16_t const RPC_DEFAULT_PORT = 27081;
+  uint16_t const ZMQ_RPC_DEFAULT_PORT = 27082;
   boost::uuids::uuid const NETWORK_ID = { {
-      0x12 ,0x30, 0xF1, 0x71 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x10
-    } }; // Bender's nightmare
+      0x1C, 0x03, 0x81, 0xB1, 0x56, 0x99, 0x48, 0xE2, 0x93, 0x7F, 0x82, 0x7E, 0xDD, 0x3F, 0x9E, 0xB7 } }; // Bender's nightmare
   std::string const GENESIS_TX = "013c01ff0001ffffffffffff03029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121017767aafcde9be00dcfd098715ebcf7f410daebc582fda69d24a28e9d0bc890d1";
-  uint32_t const GENESIS_NONCE = 10000;
+  uint32_t const GENESIS_NONCE = 70707;
 
   // Hash domain separators
   const char HASH_KEY_BULLETPROOF_EXPONENT[] = "bulletproof";
@@ -270,14 +280,13 @@ namespace config
     uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 53;
     uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 54;
     uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 63;
-    uint16_t const P2P_DEFAULT_PORT = 28080;
-    uint16_t const RPC_DEFAULT_PORT = 28081;
-    uint16_t const ZMQ_RPC_DEFAULT_PORT = 28082;
+    uint16_t const P2P_DEFAULT_PORT = 27180;
+    uint16_t const RPC_DEFAULT_PORT = 27181;
+    uint16_t const ZMQ_RPC_DEFAULT_PORT = 27182;
     boost::uuids::uuid const NETWORK_ID = { {
-        0x12 ,0x30, 0xF1, 0x71 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x11
-      } }; // Bender's daydream
+      0xFC, 0xA0, 0x3F, 0x5B, 0x5B, 0xDA, 0x47, 0x38, 0x8B, 0xD8, 0x87, 0x2A, 0x28, 0x0A, 0xD8, 0xDF } }; // Bender's daydream
     std::string const GENESIS_TX = "013c01ff0001ffffffffffff03029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121017767aafcde9be00dcfd098715ebcf7f410daebc582fda69d24a28e9d0bc890d1";
-    uint32_t const GENESIS_NONCE = 10001;
+    uint32_t const GENESIS_NONCE = 70708;
   }
 
   namespace stagenet
@@ -285,14 +294,13 @@ namespace config
     uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 24;
     uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 25;
     uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 36;
-    uint16_t const P2P_DEFAULT_PORT = 38080;
-    uint16_t const RPC_DEFAULT_PORT = 38081;
-    uint16_t const ZMQ_RPC_DEFAULT_PORT = 38082;
+    uint16_t const P2P_DEFAULT_PORT = 27280;
+    uint16_t const RPC_DEFAULT_PORT = 27281;
+    uint16_t const ZMQ_RPC_DEFAULT_PORT = 27282;
     boost::uuids::uuid const NETWORK_ID = { {
-        0x12 ,0x30, 0xF1, 0x71 , 0x61, 0x04 , 0x41, 0x61, 0x17, 0x31, 0x00, 0x82, 0x16, 0xA1, 0xA1, 0x12
-      } }; // Bender's daydream
+      0x6B, 0x92, 0xAE, 0x1A, 0x95, 0xFA, 0x45, 0xA7, 0xBB, 0x5C, 0x29, 0xF6, 0x29, 0xA8, 0x8C, 0x0D } }; // Bender's daydream
     std::string const GENESIS_TX = "013c01ff0001ffffffffffff0302df5d56da0c7d643ddd1ce61901c7bdc5fb1738bfe39fbe69c28a3a7032729c0f2101168d0c4ca86fb55a4cf6a36d31431be1c53a3bd7411bb24e8832410289fa6f3b";
-    uint32_t const GENESIS_NONCE = 10002;
+    uint32_t const GENESIS_NONCE = 70709;
   }
 }
 

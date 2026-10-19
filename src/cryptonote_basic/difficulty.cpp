@@ -214,6 +214,11 @@ namespace cryptonote {
     if (length <= 1) {
       return 1;
     }
+    // Vulpurr: fixed difficulty until the window is full, so the first
+    // instant blocks of a fresh chain cannot spike the difficulty.
+    if (length < DIFFICULTY_WINDOW) {
+      return 60000;
+    }
     static_assert(DIFFICULTY_WINDOW >= 2, "Window is too small");
     assert(length <= DIFFICULTY_WINDOW);
     sort(timestamps.begin(), timestamps.end());
@@ -254,4 +259,55 @@ namespace cryptonote {
     return "0x" + s;
   }
 
+
+  difficulty_type next_difficulty_lwma(std::vector<std::uint64_t> timestamps, std::vector<difficulty_type> cumulative_difficulties, size_t target_seconds)
+  {
+    const size_t N = VULPURR_LWMA_WINDOW;
+    if (timestamps.size() != cumulative_difficulties.size())
+      return VULPURR_LWMA_START_DIFFICULTY;
+    if (timestamps.size() > N + 1)
+    {
+      timestamps.erase(timestamps.begin(), timestamps.end() - (N + 1));
+      cumulative_difficulties.erase(cumulative_difficulties.begin(), cumulative_difficulties.end() - (N + 1));
+    }
+    const size_t n = timestamps.size() - 1; // number of solve times
+    if (timestamps.size() < 6)
+      return VULPURR_LWMA_START_DIFFICULTY;
+
+    const int64_t T = static_cast<int64_t>(target_seconds);
+    int64_t L = 0;
+    uint64_t previous_timestamp = timestamps[0];
+    for (size_t i = 1; i <= n; ++i)
+    {
+      // monotonic timestamps; out-of-order ones count as 1 second
+      const uint64_t this_timestamp = timestamps[i] > previous_timestamp ? timestamps[i] : previous_timestamp + 1;
+      const int64_t solve_time = std::min<int64_t>(6 * T, static_cast<int64_t>(this_timestamp - previous_timestamp));
+      previous_timestamp = this_timestamp;
+      L += solve_time * static_cast<int64_t>(i);
+    }
+    // keep L sane against timestamp manipulation
+    const int64_t min_L = static_cast<int64_t>(n * n) * T / 20;
+    if (L < min_L)
+      L = min_L;
+
+    const difficulty_type sum_D = cumulative_difficulties[n] - cumulative_difficulties[0];
+    // next_D = avg_D * T / weighted_avg_solvetime = sum_D * T * (n + 1) / (2 * L), with LWMA-1's 0.99 factor
+    boost::multiprecision::uint256_t next = boost::multiprecision::uint256_t(sum_D) * T * (n + 1) * 99;
+    next /= boost::multiprecision::uint256_t(2) * L * 100;
+
+    // limit the step relative to the last block
+    const difficulty_type last_D = cumulative_difficulties[n] - cumulative_difficulties[n - 1];
+    const boost::multiprecision::uint256_t lo = boost::multiprecision::uint256_t(last_D) * 67 / 100;
+    const boost::multiprecision::uint256_t hi = boost::multiprecision::uint256_t(last_D) * 150 / 100;
+    if (last_D > 0)
+    {
+      if (next < lo) next = lo;
+      if (next > hi) next = hi;
+    }
+    if (next < 1)
+      next = 1;
+    if (next > std::numeric_limits<difficulty_type>::max())
+      next = std::numeric_limits<difficulty_type>::max();
+    return next.convert_to<difficulty_type>();
+  }
 }

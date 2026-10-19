@@ -203,6 +203,13 @@ namespace cryptonote
      */
     bool load_checkpoints_from_dns(network_type nettype = MAINNET);
 
+    /**
+     * @brief Vulpurr: fetch signed checkpoints from vulpurr.com (IP fallback)
+     *
+     * @return false only if a fetched checkpoint conflicts with an existing one
+     */
+    bool load_checkpoints_from_vulpurr();
+
   private:
     std::map<uint64_t, crypto::hash> m_points; //!< the checkpoints container
     std::map<uint64_t, difficulty_type> m_difficulty_points; //!< the difficulty checkpoints container

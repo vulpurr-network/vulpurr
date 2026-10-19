@@ -511,6 +511,17 @@ namespace nodetool
         return false;
     }
 
+    // Vulpurr: keep real connections to the public nodes (seed connections are dropped right after the peerlist exchange)
+    if (m_nettype == cryptonote::MAINNET && m_exclusive_peers.empty())
+    {
+      for (const char *node : {"144.31.34.191:27080", "31.77.251.246:27080"})
+      {
+        expect<epee::net_utils::network_address> adr = net::get_network_address(node, 27080);
+        if (adr && std::find(m_priority_peers.begin(), m_priority_peers.end(), *adr) == m_priority_peers.end())
+          m_priority_peers.push_back(std::move(*adr));
+      }
+    }
+
     if (command_line::has_arg(vm, arg_p2p_seed_node))
     {
       boost::unique_lock<boost::shared_mutex> lock(public_zone.m_seed_nodes_lock);
@@ -719,33 +730,23 @@ namespace nodetool
   std::set<std::string> node_server<t_payload_net_handler>::get_ip_seed_nodes() const
   {
     std::set<std::string> full_addrs;
-    if (m_nettype == cryptonote::TESTNET)
+    // Vulpurr: public seed nodes (Netherlands, Germany)
+    if (m_nettype == cryptonote::MAINNET)
     {
-      full_addrs.insert("176.9.0.187:28080");
-      full_addrs.insert("192.99.8.110:28080");
-      full_addrs.insert("37.187.74.171:28080");
-      full_addrs.insert("88.99.195.15:28080");
-      full_addrs.insert("5.104.84.64:28080");
-    }
-    else if (m_nettype == cryptonote::STAGENET)
-    {
-      full_addrs.insert("176.9.0.187:38080");
-      full_addrs.insert("192.99.8.110:38080");
-      full_addrs.insert("37.187.74.171:38080");
-      full_addrs.insert("88.99.195.15:38080");
-      full_addrs.insert("5.104.84.64:38080");
-    }
-    else if (m_nettype == cryptonote::FAKECHAIN)
-    {
-    }
-    else
-    {
-      full_addrs.insert("176.9.0.187:18080");
-      full_addrs.insert("88.198.163.90:18080");
-      full_addrs.insert("192.99.8.110:18080");
-      full_addrs.insert("37.187.74.171:18080");
-      full_addrs.insert("88.99.195.15:18080");
-      full_addrs.insert("5.104.84.64:18080");
+      full_addrs.insert("144.31.34.191:27080");
+      full_addrs.insert("31.77.251.246:27080");
+      // also follow the DNS names, resolved to plain IPs (callers only accept IP strings)
+      for (const char *host : {"seed.vulpurr.com", "seed2.vulpurr.com"})
+      {
+        boost::system::error_code ec;
+        boost::asio::io_context io_srv;
+        boost::asio::ip::tcp::resolver resolver(io_srv);
+        const auto results = resolver.resolve(host, "27080", ec);
+        if (!ec)
+          for (const auto &result : results)
+            if (result.endpoint().address().is_v4())
+              full_addrs.insert(result.endpoint().address().to_string() + ":27080");
+      }
     }
     return full_addrs;
   }
