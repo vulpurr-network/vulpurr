@@ -39,7 +39,13 @@ set (CMAKE_LINKER ld CACHE FILEPATH "" FORCE)
 #set (CMAKE_RANLIB ${GCC_PREFIX}-gcc-ranlib CACHE FILEPATH "" FORCE)
 set (CMAKE_RC_COMPILER windres)
 
-set (CMAKE_FIND_ROOT_PATH "${MSYS2_FOLDER}/mingw64")
+# MSYS2 environment the build runs in (ucrt64, mingw64, ...), mingw64 by default
+if (NOT "$ENV{MSYSTEM}" STREQUAL "" AND NOT "$ENV{MSYSTEM}" STREQUAL "MSYS")
+  string (TOLOWER "$ENV{MSYSTEM}" MSYS2_ENV)
+else()
+  set (MSYS2_ENV mingw64)
+endif()
+set (CMAKE_FIND_ROOT_PATH "${MSYS2_FOLDER}/${MSYS2_ENV}")
 
 # Ensure cmake doesn't find things in the wrong places
 set (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER) # Find programs on host
