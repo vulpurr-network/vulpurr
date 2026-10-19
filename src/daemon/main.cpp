@@ -45,7 +45,15 @@
 #include "rpc/rpc_args.h"
 #include "daemon/command_line_args.h"
 #include "version.h"
+// The wallet repo bumps the build number; a standalone checkout has no such file
+#if defined(__has_include)
+#if __has_include("../../../src/main/VulpurrVersion.h")
 #include "../../../src/main/VulpurrVersion.h"
+#endif
+#endif
+#ifndef VULPURR_BUILD
+#define VULPURR_BUILD "dev"
+#endif
 
 #ifdef STACK_TRACE
 #include "common/stack_trace.h"

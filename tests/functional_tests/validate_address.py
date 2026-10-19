@@ -44,7 +44,7 @@ class AddressValidationTest():
     def create(self):
         print('Creating wallet')
         seed = 'velvet lymph giddy number token physics poetry unquoted nibs useful sabotage limits benches lifestyle eden nitrogen anvil fewest avoid batch vials washing fences goat unquoted'
-        address = '42ey1afDFnn4886T7196doS9GPMzexD9gXpsZJDwVjeRVdFCSoHnv7KPbBeGpzJBzHRCAs9UxqeoyFQMYbqSWYTfJJQAWDm'
+        address = 'VuA6ZzhM5ay3DCnubWiv1CBDBJWTCUcvTAZnE9ioE7pUMiqwXpce7GX5kfyaW4X8V523Rkyoa9NQ6LWj2DrEX7cE2PDLn3rLQD'
         self.wallet = Wallet()
         # close the wallet if any, will throw if none is loaded
         try: self.wallet.close_wallet()
@@ -65,13 +65,13 @@ class AddressValidationTest():
     def check_good_addresses(self):
         print('Validating good addresses')
         addresses = [
-            [ 'mainnet',  '', '42ey1afDFnn4886T7196doS9GPMzexD9gXpsZJDwVjeRVdFCSoHnv7KPbBeGpzJBzHRCAs9UxqeoyFQMYbqSWYTfJJQAWDm' ],
-            [ 'mainnet',  '', '44Kbx4sJ7JDRDV5aAhLJzQCjDz2ViLRduE3ijDZu3osWKBjMGkV1XPk4pfDUMqt1Aiezvephdqm6YD19GKFD9ZcXVUTp6BW' ],
+            [ 'mainnet',  '', 'VuA6ZzhM5ay3DCnubWiv1CBDBJWTCUcvTAZnE9ioE7pUMiqwXpce7GX5kfyaW4X8V523Rkyoa9NQ6LWj2DrEX7cE2PDLn3rLQD' ],
+            [ 'mainnet',  '', 'VuA6exQDjxVfVkUZ8JUmeLXZoSGZ4EyTx6mrfkDUazq5361xT7VQsp7ZugqtNJamRQYBXF8jf3Sq1Z2ETh4jMpnnA4yBYFArZS' ],
             [ 'testnet',  '', '9ujeXrjzf7bfeK3KZdCqnYaMwZVFuXemPU8Ubw335rj2FN1CdMiWNyFV3ksEfMFvRp9L9qum5UxkP5rN9aLcPxbH1au4WAB' ],
             [ 'stagenet', '', '53teqCAESLxeJ1REzGMAat1ZeHvuajvDiXqboEocPaDRRmqWoVPzy46GLo866qRFjbNhfkNckyhST3WEvBviDwpUDd7DSzB' ],
-            [ 'mainnet', 'i', '4BxSHvcgTwu25WooY4BVmgdcKwZu5EksVZSZkDd6ooxSVVqQ4ubxXkhLF6hEqtw96i9cf3cVfLw8UWe95bdDKfRQeYtPwLm1Jiw7AKt2LY' ],
-            [ 'mainnet', 's', '8AsN91rznfkBGTY8psSNkJBg9SZgxxGGRUhGwRptBhgr5XSQ1XzmA9m8QAnoxydecSh5aLJXdrgXwTDMMZ1AuXsN1EX5Mtm' ],
-            [ 'mainnet', 's', '86kKnBKFqzCLxtK1Jmx2BkNBDBSMDEVaRYMMyVbeURYDWs8uNGDZURKCA5yRcyMxHzPcmCf1q2fSdhQVcaKsFrtGRsdGfNk' ],
+            [ 'mainnet', 'i', 'Vi46ko3otY1Rb5wFn2SN9H3ntHJjeoXjsGS81YC3sfCQBo2Ebw4GhiMKfYLuyFd1TrDG3PhmMxfTr81Jdw6fHSC69c1CqijeM9S9nxabwztrA' ],
+            [ 'mainnet', 's', 'Vs7Qzyn7qrURMGADmVsVFLaric1VLDGmRFJZL6v7vLdnPYWkxgvnNhq8rMpziyJ9MuKgxjj1vq3p31V9Db9976Ug6CpAypZVtL' ],
+            [ 'mainnet', 's', 'Vs7Qni7XPfs4S5od87BgeCQqs7pCPHx92U71ZQ3uhVVDAju2bAiy8PdNrmTds86B2fE4WnWaotPGZdMAUo3E7FVH3RGn7bgVsp' ],
             [ 'testnet', 'i', 'AApMA1VuhiCaHzr5X2KXi2Zc9oJ3VaGjkfChxxpRpxkyKf1NetvbRbQTbFMrGkr85DjnEH7JsBaoUFsgKwZnmtnVWnoB8MDotCsLb7eWwz' ],
             [ 'testnet', 's', 'BdKg9udkvckC5T58a8Nmtb6BNsgRAxs7uA2D49sWNNX5HPW5Us6Wxu8QMXrnSx3xPBQQ2iu9kwEcRGAoiz6EPmcZKbF62GS' ],
             [ 'testnet', 's', 'BcFvPa3fT4gVt5QyRDe5Vv7VtUFao9ci8NFEy3r254KF7R1N2cNB5FYhGvrHbMStv4D6VDzZ5xtxeKV8vgEPMnDcNFuwZb9' ],
@@ -94,17 +94,14 @@ class AddressValidationTest():
     def check_openalias_addresses(self):
         print('Validating openalias addresses')
         addresses = [
-            ['donate@getmonero.org', '888tNkZrPN6JsEgekjMnABU4TBzc2Dt29EPAvkRxbANsAnjyPbb3iQ1YBRk1UXcdRsiKc9dhwMVgN5S9cQUiyoogDavup3H']
+            ['donate@getmonero.org', 'Vs7QrqxeiJojgKAUqcr5WpVEQz1DB4aP1T1UtYaXCgSp5imRSc37zZaHvSrR5mWZAmGdGfFSQhi2uLoCca2f2nJr8J4jFpchs3']
         ]
+        # Vulpurr: donate@getmonero.org resolves to a Monero address, which is not a valid Vulpurr address
         for address in addresses:
             res = self.wallet.validate_address(address[0])
             assert not res.valid
             res = self.wallet.validate_address(address[0], allow_openalias = True)
-            assert res.valid
-            assert not res.integrated
-            assert res.subaddress
-            assert res.nettype == 'mainnet'
-            assert res.openalias_address == address[1]
+            assert not res.valid
 
 if __name__ == '__main__':
     AddressValidationTest().run_test()

@@ -214,11 +214,6 @@ namespace cryptonote {
     if (length <= 1) {
       return 1;
     }
-    // Vulpurr: fixed difficulty until the window is full, so the first
-    // instant blocks of a fresh chain cannot spike the difficulty.
-    if (length < DIFFICULTY_WINDOW) {
-      return 60000;
-    }
     static_assert(DIFFICULTY_WINDOW >= 2, "Window is too small");
     assert(length <= DIFFICULTY_WINDOW);
     sort(timestamps.begin(), timestamps.end());

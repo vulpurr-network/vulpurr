@@ -37,9 +37,9 @@ from framework.wallet import Wallet
 import random
 
 SEED = 'velvet lymph giddy number token physics poetry unquoted nibs useful sabotage limits benches lifestyle eden nitrogen anvil fewest avoid batch vials washing fences goat unquoted'
-STANDARD_ADDRESS = '42ey1afDFnn4886T7196doS9GPMzexD9gXpsZJDwVjeRVdFCSoHnv7KPbBeGpzJBzHRCAs9UxqeoyFQMYbqSWYTfJJQAWDm'
-SUBADDRESS = '84QRUYawRNrU3NN1VpFRndSukeyEb3Xpv8qZjjsoJZnTYpDYceuUTpog13D7qPxpviS7J29bSgSkR11hFFoXWk2yNdsR9WF'
-SUBADDRESS2 = '85M4M1RVRcoEeC8sdSxN1ef6GhQYChSfKPWkB4FLKYJiSWuMXXT4Ewv8BHCRzSJB4ZYvXUcFxN4DPcVu6uwoPNRvQ1QwaXB'
+STANDARD_ADDRESS = 'VuA6ZzhM5ay3DCnubWiv1CBDBJWTCUcvTAZnE9ioE7pUMiqwXpce7GX5kfyaW4X8V523Rkyoa9NQ6LWj2DrEX7cE2PDLn3rLQD'
+SUBADDRESS = 'Vs7QfjWYTmJAMoV3CE5VdA2Uk55faUqof53AUV9pjFNMSc5WTSVhebbFmvphd74LucCFPpxZ3zr1Qem8kPY8jWqv1M7cwLdCF3'
+SUBADDRESS2 = 'Vs7QiYApM5EbS79BUJSDqCCqSF7rz8kd4RTuRmixugZA2enWFH4k7YVdQ8Qq9TjB7o9HmhxTJh11PjeKaWMU4crW6aTT7TpLVm'
 
 class ColdSigningTest():
     def run_test(self):

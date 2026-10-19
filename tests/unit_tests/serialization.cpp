@@ -662,6 +662,14 @@ TEST(Serialization, serializes_ringct_types)
 
 TEST(Serialization, portability_wallet)
 {
+  // Vulpurr: wallet_9svHk1 was made on the Monero testnet, whose genesis block differs from the
+  // Vulpurr testnet one, so wallet2 refuses to load it (Genesis block mismatch)
+#ifdef GTEST_SKIP
+  GTEST_SKIP() << "Monero testnet wallet file";
+#else
+  std::cerr << "Skipping test: Monero testnet wallet file" << std::endl;
+  return;
+#endif
   const cryptonote::network_type nettype = cryptonote::TESTNET;
   tools::wallet2 w(nettype);
   const boost::filesystem::path wallet_file = unit_test::data_dir / "wallet_9svHk1";

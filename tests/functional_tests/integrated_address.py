@@ -52,7 +52,7 @@ class IntegratedAddressTest():
         except: pass
         seed = 'velvet lymph giddy number token physics poetry unquoted nibs useful sabotage limits benches lifestyle eden nitrogen anvil fewest avoid batch vials washing fences goat unquoted'
         res = wallet.restore_deterministic_wallet(seed = seed)
-        assert res.address == '42ey1afDFnn4886T7196doS9GPMzexD9gXpsZJDwVjeRVdFCSoHnv7KPbBeGpzJBzHRCAs9UxqeoyFQMYbqSWYTfJJQAWDm'
+        assert res.address == 'VuA6ZzhM5ay3DCnubWiv1CBDBJWTCUcvTAZnE9ioE7pUMiqwXpce7GX5kfyaW4X8V523Rkyoa9NQ6LWj2DrEX7cE2PDLn3rLQD'
         assert res.seed == seed
 
     def check(self):
@@ -60,29 +60,29 @@ class IntegratedAddressTest():
 
         print('Checking local address')
         res = wallet.make_integrated_address(payment_id = '0123456789abcdef')
-        assert res.integrated_address == '4CMe2PUhs4J4886T7196doS9GPMzexD9gXpsZJDwVjeRVdFCSoHnv7KPbBeGpzJBzHRCAs9UxqeoyFQMYbqSWYTfSbLRB61BQVATzerHGj'
+        assert res.integrated_address == 'Vi46mz8HZeH3DCnubWiv1CBDBJWTCUcvTAZnE9ioE7pUMiqwXpce7GX5kfyaW4X8V523Rkyoa9NQ6LWj2DrEX7cE773UEqxXKr87WcimibNCE'
         assert res.payment_id == '0123456789abcdef'
         res = wallet.split_integrated_address(res.integrated_address)
-        assert res.standard_address == '42ey1afDFnn4886T7196doS9GPMzexD9gXpsZJDwVjeRVdFCSoHnv7KPbBeGpzJBzHRCAs9UxqeoyFQMYbqSWYTfJJQAWDm'
+        assert res.standard_address == 'VuA6ZzhM5ay3DCnubWiv1CBDBJWTCUcvTAZnE9ioE7pUMiqwXpce7GX5kfyaW4X8V523Rkyoa9NQ6LWj2DrEX7cE2PDLn3rLQD'
         assert res.payment_id == '0123456789abcdef'
 
         print('Checking different address')
-        res = wallet.make_integrated_address(standard_address = '46r4nYSevkfBUMhuykdK3gQ98XDqDTYW1hNLaXNvjpsJaSbNtdXh1sKMsdVgqkaihChAzEy29zEDPMR3NHQvGoZCLGwTerK', payment_id = '1122334455667788')
-        assert res.integrated_address == '4GYjoMG9Y2BBUMhuykdK3gQ98XDqDTYW1hNLaXNvjpsJaSbNtdXh1sKMsdVgqkaihChAzEy29zEDPMR3NHQvGoZCVSs1ZojwrDCGS5rUuo'
+        res = wallet.make_integrated_address(standard_address = 'VuA6nUSpDmF7VYGeuu4Npp86qCjkBYPf1g6dQj1ovJwBZxDRnPxKSyQjhVTL22p5bACTEMjEepu8eaUrtk6P5VEh6cwoBTZR14', payment_id = '1122334455667788')
+        assert res.integrated_address == 'Vi46zTskhpZ7VYGeuu4Npp86qCjkBYPf1g6dQj1ovJwBZxDRnPxKSyQjhVTL22p5bACTEMjEepu8eaUrtk6P5VEhRoernfpsFcp4tDYBEAdo7'
         assert res.payment_id == '1122334455667788'
         res = wallet.split_integrated_address(res.integrated_address)
-        assert res.standard_address == '46r4nYSevkfBUMhuykdK3gQ98XDqDTYW1hNLaXNvjpsJaSbNtdXh1sKMsdVgqkaihChAzEy29zEDPMR3NHQvGoZCLGwTerK'
+        assert res.standard_address == 'VuA6nUSpDmF7VYGeuu4Npp86qCjkBYPf1g6dQj1ovJwBZxDRnPxKSyQjhVTL22p5bACTEMjEepu8eaUrtk6P5VEh6cwoBTZR14'
         assert res.payment_id == '1122334455667788'
 
         print('Checking bad payment id')
         fails = 0
-        try: wallet.make_integrated_address(standard_address = '46r4nYSevkfBUMhuykdK3gQ98XDqDTYW1hNLaXNvjpsJaSbNtdXh1sKMsdVgqkaihChAzEy29zEDPMR3NHQvGoZCLGwTerK', payment_id = '11223344556677880')
+        try: wallet.make_integrated_address(standard_address = 'VuA6nUSpDmF7VYGeuu4Npp86qCjkBYPf1g6dQj1ovJwBZxDRnPxKSyQjhVTL22p5bACTEMjEepu8eaUrtk6P5VEh6cwoBTZR14', payment_id = '11223344556677880')
         except: fails += 1
-        try: wallet.make_integrated_address(standard_address = '46r4nYSevkfBUMhuykdK3gQ98XDqDTYW1hNLaXNvjpsJaSbNtdXh1sKMsdVgqkaihChAzEy29zEDPMR3NHQvGoZCLGwTerK', payment_id = '112233445566778')
+        try: wallet.make_integrated_address(standard_address = 'VuA6nUSpDmF7VYGeuu4Npp86qCjkBYPf1g6dQj1ovJwBZxDRnPxKSyQjhVTL22p5bACTEMjEepu8eaUrtk6P5VEh6cwoBTZR14', payment_id = '112233445566778')
         except: fails += 1
-        try: wallet.make_integrated_address(standard_address = '46r4nYSevkfBUMhuykdK3gQ98XDqDTYW1hNLaXNvjpsJaSbNtdXh1sKMsdVgqkaihChAzEy29zEDPMR3NHQvGoZCLGwTerK', payment_id = '112233445566778g')
+        try: wallet.make_integrated_address(standard_address = 'VuA6nUSpDmF7VYGeuu4Npp86qCjkBYPf1g6dQj1ovJwBZxDRnPxKSyQjhVTL22p5bACTEMjEepu8eaUrtk6P5VEh6cwoBTZR14', payment_id = '112233445566778g')
         except: fails += 1
-        try: wallet.make_integrated_address(standard_address = '46r4nYSevkfBUMhuykdK3gQ98XDqDTYW1hNLaXNvjpsJaSbNtdXh1sKMsdVgqkaihChAzEy29zEDPMR3NHQvGoZCLGwTerK', payment_id = '1122334455667788112233445566778811223344556677881122334455667788')
+        try: wallet.make_integrated_address(standard_address = 'VuA6nUSpDmF7VYGeuu4Npp86qCjkBYPf1g6dQj1ovJwBZxDRnPxKSyQjhVTL22p5bACTEMjEepu8eaUrtk6P5VEh6cwoBTZR14', payment_id = '1122334455667788112233445566778811223344556677881122334455667788')
         except: fails += 1
         assert fails == 4
 
@@ -90,7 +90,7 @@ class IntegratedAddressTest():
         fails = 0
         try: wallet.make_integrated_address(standard_address = '46r4nYSevkfBUMhuykdK3gQ98XDqDTYW1hNLaXNvjpsJaSbNtdXh1sKMsdVgqkaihChAzEy29zEDPMR3NHQvGoZCLGwTerr', payment_id = '1122334455667788')
         except: fails += 1
-        try: wallet.make_integrated_address(standard_address = '4GYjoMG9Y2BBUMhuykdK3gQ98XDqDTYW1hNLaXNvjpsJaSbNtdXh1sKMsdVgqkaihChAzEy29zEDPMR3NHQvGoZCVSs1ZojwrDCGS5rUuo', payment_id = '1122334455667788')
+        try: wallet.make_integrated_address(standard_address = 'Vi46zTskhpZ7VYGeuu4Npp86qCjkBYPf1g6dQj1ovJwBZxDRnPxKSyQjhVTL22p5bACTEMjEepu8eaUrtk6P5VEhRoernfpsFcp4tDYBEAdo7', payment_id = '1122334455667788')
         except: fails += 1
         assert fails == 2
 

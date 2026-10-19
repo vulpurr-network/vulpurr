@@ -677,7 +677,11 @@ TEST(cryptonote_protocol_handler, race_condition)
       reward,
       hardfork
     );
-    block.miner_tx.vout.push_back(cryptonote::tx_out{reward, cryptonote::txout_to_key{}});
+    // Vulpurr mainnet reaches every hard fork in the first blocks, so view tags are already required
+    if (hardfork >= HF_VERSION_VIEW_TAGS)
+      block.miner_tx.vout.push_back(cryptonote::tx_out{reward, cryptonote::txout_to_tagged_key{}});
+    else
+      block.miner_tx.vout.push_back(cryptonote::tx_out{reward, cryptonote::txout_to_key{}});
     diff = storage.get_difficulty_for_next_block();
   };
   struct stat {

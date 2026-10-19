@@ -53,6 +53,7 @@
 #define VULPURR_MAX_REORG_DEPTH                         10     // never rewrite more than this many blocks
 #define VULPURR_LWMA_WINDOW                             72     // LWMA-1 window (zawy12), N = 45*(600/T)^0.3 for T=120
 #define VULPURR_LWMA_START_DIFFICULTY                   100000 // used when fewer than 6 blocks exist
+#define VULPURR_FIXED_START_DIFFICULTY                  60000  // pre-LWMA blocks while the difficulty window is not full
 #define VULPURR_LWMA_HEIGHT_MAINNET                     VULPURR_LWMA_ACTIVATION
 #define VULPURR_FUTURE_TIME_LIMIT_LWMA                  (DIFFICULTY_TARGET_V2 * 5)
 #define VULPURR_CHECKPOINTS_PUBKEY                      "c0e42a4cb7a184cde51aae6579daecea6f102c6bf3d573565ca2601f4b410555"

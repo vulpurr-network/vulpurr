@@ -36,8 +36,9 @@
 using namespace boost::filesystem;
 using namespace epee::file_io_utils;
 
+// Vulpurr: wallet_00fd416a was recreated with vulpurr-wallet-rpc (mainnet, password "beepbeep")
 static constexpr const char WALLET_00fd416a_PRIMARY_ADDRESS[] =
-    "45p2SngJAPSJbqSiUvYfS3BfhEdxZmv8pDt25oW1LzxrZv9Uq6ARagiFViMGUE3gJk5VPWingCXVf1p2tyAy6SUeSHPhbve";
+    "VuA6jFZMbnYNNtuztNiUwBQ5Eifhtdafmay4vdhLoAmrVmDH7A8EWmmRL8pRXNMJge6BaDmgzXH3uVx7yvu1wXQ75Dfnrx3DAp";
 
 TEST(wallet_storage, store_to_file2file)
 {

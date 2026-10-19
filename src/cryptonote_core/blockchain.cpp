@@ -854,12 +854,18 @@ bool Blockchain::get_block_by_hash(const crypto::hash &h, block &blk, bool *orph
 // last DIFFICULTY_BLOCKS_COUNT blocks and passes them to next_difficulty,
 // returning the result of that call.  Ignores the genesis block, and can use
 // less blocks than desired if there aren't enough.
-// Vulpurr: pick the difficulty algorithm by height (LWMA after activation)
+// Vulpurr: pick the difficulty algorithm by height (LWMA after activation).
+// FAKECHAIN (unit and core tests, regtest) keeps the plain Monero algorithm.
 static difficulty_type vulpurr_next_difficulty(network_type nettype, uint64_t height, std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulative_difficulties, size_t target)
 {
+  if (nettype == FAKECHAIN)
+    return next_difficulty(std::move(timestamps), std::move(cumulative_difficulties), target);
   const uint64_t lwma_height = nettype == MAINNET ? VULPURR_LWMA_HEIGHT_MAINNET : 1;
   if (height >= lwma_height)
     return next_difficulty_lwma(std::move(timestamps), std::move(cumulative_difficulties), target);
+  // fixed difficulty until the window is full, so the first instant blocks of a fresh chain cannot spike it
+  if (timestamps.size() > 1 && timestamps.size() < DIFFICULTY_WINDOW)
+    return VULPURR_FIXED_START_DIFFICULTY;
   return next_difficulty(std::move(timestamps), std::move(cumulative_difficulties), target);
 }
 //------------------------------------------------------------------
@@ -4776,8 +4782,8 @@ bool Blockchain::update_checkpoints(const std::string& file_path, bool check_dns
       return false;
   }
 
-  // Vulpurr: signed checkpoints from vulpurr.com replace MoneroPulse DNS checkpoints
-  if (check_dns && !m_offline)
+  // Vulpurr: signed checkpoints from vulpurr.com replace MoneroPulse DNS checkpoints (mainnet only)
+  if (check_dns && !m_offline && m_nettype == MAINNET)
   {
     if (!m_checkpoints.load_checkpoints_from_vulpurr())
       MERROR("Vulpurr checkpoints conflict with existing checkpoints, ignoring them");
