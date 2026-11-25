@@ -1,4 +1,4 @@
-<p align="center"><img src="https://vulpurr.com/logo.svg" width="96" alt="Vulpurr"></p>
+<p align="center"><img src="https://vulpurr.com/logo.svg?v=2" width="96" alt="Vulpurr"></p>
 
 <h1 align="center">Vulpurr (VUP)</h1>
 
